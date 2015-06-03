@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<!-- tutto quello che non "apparirà": i collegamenti etc etc -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,user-scalable=no" />
+   <!-- <meta name="theme-color" content="#242d33">	-->
+	<link href="css/style.css" rel="stylesheet"/>	<!-- è uno stylsheet-->
+	<link href="css/gaia/headers.css" rel="stylesheet"/>
+	<link href="css/gaia/lists.css" rel="stylesheet"/>
+	<link href="css/gaia/layout.css" rel="stylesheet"/>
+	<link href="css/gaia/scrolling.css" rel="stylesheet"/>
+	<link href="css/gaia/buttons.css" rel="stylesheet"/>		
+	<link href="css/util.css" rel="stylesheet"/>			
+</head>
+<style>
+.b {
+	border: 2px solid #007A7A;
+	border-radius: 2px;
+	background-color: #66AFAF;
+}
+.a{
+	background-color: #007A77;
+}
+.c{
+	text-align: center;
+	background-color: #4DA0A0;
+	border-radius: 10px;
+}
+
+</style>
+<body role="application" style="background-color:#335858;">
+
+ 	<section id = "home" role="region" style="background-color:#E0EFEF;" data-position="current">
+	<header class='fixed b'>Daedalus </header>
+			<article class="content scrollable header">			
+				<div><p>This is a Beta! stay tuned for further updates!</p>
+				<button class ="c" style="background-color:#00CC66;" onclick="newGame()">Start New Game</button>
+				<button class ="c" id='continua' onclick="location.href='prova.html'">Enter the Maze</button>
+				<button class ="c" onclick=swapClass("home","right");swapClass("about","current")>About</button>
+				<button class ="c" onclick=swapClass("home","right");swapClass("options","current")>Options</button>
+				<button class ="c" onclick=swapClass("home","right");swapClass("ht","current")>How to Play</button>
+				<button class ="c" onclick="eraseData()">Clear Local Data</button>			
+				</div>
+			<article>		
+	</section>
+
+ 	<section id = "about" role="region" style="background-color:#E0EFEF;" data-position="left">
+	<header>	<h1 class="a">About</h1> </header>
+		<section class="gaia-list fit scroll sticky">	<!-- schermata dell'app -->
+			<article>
+				<ul>
+				<li><div>Created using WebGL and Three.js.<br>Have you found a bug? Send me an email about it!</div></li>
+				<li><button class ="c"type="button" onclick=swapClass("about","left");swapClass("home","current");>Home</button>	</li>	
+				<li><div style="bottom:0; position:fixed;">Developed by Federico Almaviva of the Firefox Club Milano</div></li>
+				</ul>
+			<article>		
+		</section>
+	</section>	
+ 	<section id = "ht" role="region" style="background-color:#E0EFEF;" data-position="left">
+	<header>	<h1 class="a">How to Play</h1></header>
+		<section class="gaia-list fit scroll sticky">	<!-- schermata dell'app -->
+			<article>
+			<ul>
+				<li><div class ="c,b"><p> To Move and rotate tap the screen in the desired direction</p></div></li>				
+				<li><div class ="c,b"><p> To return to the main menu tap the red button on your status bar</p></div>	</li>			
+				<li><div class ="c,b"><p> To place a sign tap the blue circle at the top of the screen</p><p>Notice that you can place a sign only on a wall</p>	</div></li>
+				<li><div class ="c,b"><p> To collect more signs just walk on them</p></div></li>
+				<li><div class ="c,b"><p> The game automatically saves your status when solving a maze</p></div>	</li>											
+				<li><button type="button" onclick=swapClass("ht","left");swapClass("home","current");>Home</button></li>
+				<li></li>
+				<ul>
+			<article>		
+		</section>
+	</section>	
+
+
+ 	<section id = "options" role="region" style="background-color:#E0EFEF;" data-position="left">
+	<header>	<h1 class="a">Options</h1></header>
+		<section class="gaia-list fit scroll sticky">	<!-- schermata dell'app -->
+			<article>
+			<ul>
+				<li>
+				<div>
+				Movement Speed<br>
+				<input type="range" id ="vel_rot" oninput="changeOptRot(this.value)" style="width:90%;right:5%">		
+				</div>
+				</li>
+				<li>
+				<div>
+				Light Intensity<br>
+				<input type="range" id ="l_int" oninput="changeL(this.value)" style="width:90%;right:5%">		
+				</div>		
+				</li>
+				<li>		
+				<button type="button" onclick=swapClass("options","left");swapClass("home","current");>Home</button>
+				</li>
+				<li></li>
+			</ul>
+			<article>		
+		</section>
+	</section>		
+
+	<script>
+	var lc = localStorage
+	init_opt()
+	//document.getElementById("vel_rot").addEventListener("oninput", changeOptRot(document.getElementById("vel_rot").value));
+
+		function init_opt(){
+			if(lc['opt_rot']){
+				var opt_rot=parseInt(lc['opt_rot'])
+				document.getElementById("vel_rot").value=100-opt_rot
+			}
+			else{
+				localStorage.setItem('opt_rot','20')
+				document.getElementById("vel_rot").value=20
+			}		
+			if(lc['opt_l']){
+				var opt=parseInt(lc['opt_l'])
+				document.getElementById("l_int").value=opt/2*10
+			}
+			else{
+				localStorage.setItem('opt_l','1.8')
+				document.getElementById("l_int").value=18
+			}
+			if (!lc['livello']){
+				document.getElementById("continua").disabled=true;
+			}
+		}
+
+		function eraseData(){
+			if (confirm("This will erase all saved data. Are you sure?")){
+				lc.clear()	
+				document.getElementById("continua").disabled=true;
+			}
+		}
+		function newGame(){
+			console.log(lc['livello'])
+			if ((lc['livello'] && confirm("This will erase your saved game"))||(!lc['livello'])){
+				lc['livello']=0;
+				lc['segni']=0;
+				location.href='prova.html'
+			}
+		}
+
+		function changeOptRot(i){
+			var newVal=(i-100)*-1;
+			if (newVal<10)
+				newVal=10
+			if (newVal>90)
+				newVal=90
+			lc['opt_rot']=newVal
+			console.log(i)
+		}
+		function changeL(i){
+			lc['opt_l']=i/10
+			console.log(i)
+		}		
+
+		function swapClass(elem,t){
+			document.getElementById(elem).className = t;		
+		}
+	</script>
+ 	
+
+</body>
+
+
+</html>
+

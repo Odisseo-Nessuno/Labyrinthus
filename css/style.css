@@ -1,0 +1,136 @@
+li {
+	border-bottom: 1px solid #ccc;
+	border-width: 100%;
+	margin-bottom: 1rem !important;
+	cursor: pointer;
+}
+
+
+iframe#frame{
+	width: 100%;
+	height: 100%;
+}
+
+[data-position="current"]{
+	position:absolute;
+	opacity: 1;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	transform: translateX(0);
+	-webkit-transform: translateX(0);
+	z-index: 15;
+}
+
+[data-position="right"]{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	transform: translateX(100%);
+	-webkit-transform: translateX(100%);
+	z-index: 15;
+}
+[data-position="left"]{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	transform: translateX(-100%);
+	-webkit-transform: translateX(-100%);
+	z-index: 15;
+}
+
+
+
+
+@keyframes CurrentToLeft {
+  0%   { transform: translateX(0);}
+  100% { transform: translateX(-100%);}
+}
+@-webkit-keyframes CurrentToLeft {
+  0%   { -webkit-transform: translateX(0); }
+  100% { -webkit-transform: translateX(-100%); }
+}
+
+@keyframes LeftToCurrent {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(0);}
+}
+@-webkit-keyframes LeftToCurrent {
+  0%   { -webkit-transform: translateX(-100%);}
+  100% { -webkit-transform: translateX(0);}
+}
+
+
+@keyframes RightToCurrent {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(0);}
+}
+@-webkit-keyframes RightToCurrent {
+  0%   { -webkit-transform: translateX(100%);}
+  100% { -webkit-transform: translateX(0);}
+}
+
+
+@keyframes CurrentToRight {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(100%);}
+}
+@-webkit-keyframes CurrentToRight {
+  0%   { -webkit-transform: translateX(0);}
+  100% { -webkit-transform: translateX(100%);}
+}
+
+@keyframes DD {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(100%);}
+}
+@-webkit-keyframes DD {
+  0%   { -webkit-transform: translateX(0);}
+  100% { -webkit-transform: translateX(100%);}
+}
+
+@keyframes LL {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(0);}
+}
+@-webkit-keyframes LL {
+  0%   { -webkit-transform: translateX(-100%);}
+  100% { -webkit-transform: translateX(0);}
+}
+
+
+
+
+[data-position="right"].current{
+	animation: RightToCurrent 0.4s forwards;
+	-webkit-animation: RightToCurrent 0.4s forwards;
+}
+[data-position="right"].right{
+	animation:CurrentToRight 0.4s forwards;
+	-webkit-animation: CurrentToRight 0.4s forwards;
+}
+
+
+[data-position="left"].current{
+	animation: LeftToCurrent 0.4s forwards;
+	-webkit-animation: LeftToCurrent 0.4s forwards;
+}
+[data-position="left"].left{
+	animation: CurrentToLeft 0.4s forwards;
+	-webkit-animation: CurrentToLeft 0.4s forwards;
+}
+
+[data-position="current"].right{
+	animation:CurrentToRight 0.4s forwards;
+	-webkit-animation: CurrentToRight 0.4s forwards;
+}
+
+[data-position="current"].current{
+	animation: RightToCurrent 0.4s forwards;
+	-webkit-animation: RightToCurrent 0.4s forwards;
+}

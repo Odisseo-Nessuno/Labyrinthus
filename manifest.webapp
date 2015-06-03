@@ -1,0 +1,14 @@
+{
+"name": "Daedalus",
+"description":"Labirinto",
+"launch_path":"/index.html",
+"version":"1",
+  "icons": {
+    "60": "/i/ico60.jpg"
+  },
+  "orientation": [ "landscape-primary" ],
+  "developer": {
+    "name": "Me"
+  }
+	
+}

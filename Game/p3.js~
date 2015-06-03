@@ -1,0 +1,205 @@
+var scene, camera, renderer,a,b;
+var WI=window.innerWidth
+var HE=window.innerHeight
+var map=[
+			[0,0,0,0,0,0,0,0,0,0],
+			[0,2,2,0,0,2,3,3,0,0],
+			[0,0,3,3,0,2,0,0,0,0],
+			[0,2,3,3,0,2,0,1,0,0],
+			[0,2,0,0,0,2,1,3,3,0],
+			[0,2,2,1,0,2,0,0,3,0],
+			[0,0,0,1,0,2,2,2,2,0],
+			[0,0,2,3,0,0,0,0,2,0],
+			[0,0,1,4,1,1,1,1,1,0],
+			[0,0,0,0,0,0,0,0,0,0]
+		]
+var imx=imy=fmx=fmy=0
+var fine=[7,1]	
+var inizio=[2,8]
+var direzione=0
+var actSpd=5
+var dirz={'N':[-1,0],'E':[0,1],'S':[1,0],'W':[0,-1]}	//y,x
+var dirs=['N','E','S','W']
+var lockInput=false
+var rot_ang=0
+var trl=0
+var actionIndex=0
+var step=0
+var fast_texture=[]
+var cx=inizio[0]
+var cy=inizio[1]
+var colliders=[]
+
+var text2 = document.createElement('div');
+text2.style.position = 'absolute';
+text2.style.width = 100;
+text2.style.height = 100;
+text2.style.backgroundColor = "blue";
+text2.innerHTML = "hi there!";
+text2.style.bottom = 10 + 'px';
+text2.style.left = '45%'
+document.body.appendChild(text2);
+console.log(dirz[1])
+
+init();
+animate();
+
+
+
+function init() {
+	nx=WI/2
+	ny=HE/2
+	load_ftexture();
+    scene = new THREE.Scene();
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(WI , HE );    	
+    camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.set(inizio[0]*100,0,inizio[1]*100)
+    make_map()
+    document.body.appendChild( renderer.domElement );
+}
+
+function make_map(){
+	for(y=0; y<10; y++){
+		for(x=0; x<10; x++){
+			if(map[y][x]!=0)
+				make_tile(y,x)
+		}
+	}
+	make_sprite(fine[0]*100,0,fine[1]*100,'Game/Exit.png',false)
+
+}
+
+function make_wall(px,py,pz,img,size,rotx,roty,blocca){
+	var geometry = new THREE.PlaneGeometry(size,size)
+	var material = new THREE.MeshBasicMaterial({map:img,side:THREE.DoubleSide})
+	var mesh = new THREE.Mesh(geometry,material);
+	mesh.position.set(px,py,pz);
+	mesh.rotation.y+=roty
+	mesh.rotation.x+=rotx
+	scene.add(mesh);
+	if (blocca)
+		colliders.push(mesh)
+}
+function make_sprite(px,py,pz,img,blocca){
+	var imm = THREE.ImageUtils.loadTexture(img);
+	var material = new THREE.SpriteMaterial( {map: imm,transparent: true} );
+	var sprite = new THREE.Sprite( material ); 
+	sprite.position.set(px,py,pz)
+	sprite.scale.set(90,90,1,1)
+	scene.add( sprite );	
+	if (blocca)
+		colliders.push(sprite)
+
+}
+function make_tile(y,x){
+	var dx=x*100
+	var dz=y*100
+	make_wall(dx,50,dz,fast_texture[7],101,Math.PI/2,0,false)		//soffitto
+	make_wall(dx,-50,dz,fast_texture[6],101,Math.PI/2,0,false)	//pavimento
+	for(i in dirz){							//muri per ogni pos. adiacente	
+		var oy=dirz[i][0]+y
+		var ox=dirz[i][1]+x
+		if (map[oy][ox]==0){
+			r=0
+			if(i=='W' || i=='E'){
+				r=Math.PI/2
+			}
+			make_wall(100*x+50*dirz[i][1],0,100*y+50*dirz[i][0],fast_texture[map[y][x]],100,0,r,true)
+		}
+	}
+}
+
+function load_ftexture(){
+	var ta=['Game/w0.jpeg','Game/w1.jpeg','Game/w2.jpeg','Game/w3.jpeg','Game/w4.jpg','Game/w5.jpg','Game/f0.jpg','Game/c0.jpeg']
+	for(var i=0;i<ta.length; i++){
+		fast_texture.push(new THREE.ImageUtils.loadTexture(ta[i]))
+	}	
+}
+
+
+function clk(e){
+	fmx=WI/2
+	fmy=HE/2
+	imx=parseInt(e.clientX,10);
+	imy=parseInt(e.clientY,10);
+	if (!lockInput){
+		lockInput=true
+		var dx=fmx-imx
+		var dy=fmy-imy
+		console.log(dx,dy)
+		if(dx<-50 || dx>50){
+			console.log("rotate")
+			var i=0
+			if(dx<0)
+				i=-1
+			else 
+				i=1
+			rot_ang=(i*Math.PI/(2*actSpd))
+			console.log(direzione)
+		}
+		else if(dy<-50 || dy>50){
+			d=0
+			if (dy<0){
+				d=-Math.PI
+			}
+			if(!check_tyle(d)){
+				var i=0
+				if(dy>0){
+					i=-1
+				}
+				else 
+					i=1
+				trl=(i*100/actSpd)
+				step +=1
+			}
+		}
+		
+		imx=imy=fmx=fmy=0
+	}
+}
+function check_tyle(y_dir){	//sempre in avanti. per radar alle spalle y_dir -Math.PI
+	var r=new THREE.Raycaster();
+	var dir  = new THREE.Vector3(0,0,-1)
+	dir.applyAxisAngle(new THREE.Vector3(0,1,0),camera.rotation.y+y_dir)
+	r.set(camera.position,dir);
+	var intersect= r.intersectObjects(colliders);
+	return(intersect[0] && intersect[0].distance<55)
+}
+
+function rotaziona(ang){
+	camera.rotation.y+=ang
+}
+
+function riposiziona(t){
+	camera.translateZ(t)
+}
+
+function move(){
+	actionIndex+=1
+	rotaziona(rot_ang)
+	riposiziona(trl)
+	if (actionIndex==actSpd){
+		actionIndex=0
+		lockInput=false
+		rot_ang=0
+		trl=0
+	}
+}
+function check_end(){
+	if(cx == fine[0] && cy == fine[1] ){
+		alert("Vittoria!")
+		document.location.href = "index.html";
+	}
+}
+
+function animate() {
+	cx=camera.position.x/100 
+	cy=camera.position.z/100
+	check_end();
+	text2.innerHTML="Passi: "+step
+	if (lockInput)
+		move()
+    requestAnimationFrame( animate );
+    renderer.render( scene, camera );
+}

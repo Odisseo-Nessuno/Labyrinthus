@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+	<script src="Game/three.min.js"></script>	
+	<img  style="position:absolute;" id='nextTile' src="">
+<div style="position:absolute; background:blue; top:5%;left:0%;width:20px;" onmouseenter="changeImgIndx(1)">+</div>
+<div style="position:absolute; background:red; top:5%;left:5%;width:20px;" onmouseenter="changeImgIndx(-x1)">-</div>
+</head>
+<style>
+html, body {
+  	width : 100%;
+	height: 100%;
+}
+</style>
+<body  onmousemove="clk(event)" onclick="addTile()" onkeydown="a_key(event)">
+<script src="Editor/editor.js"></script>
+</body>
+
+
+</html>
